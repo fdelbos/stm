@@ -8,6 +8,7 @@ import (
 	"time"
 
 	. "github.com/fdelbos/stm"
+	"github.com/fdelbos/stm/mocks"
 	"github.com/stretchr/testify/suite"
 )
 
