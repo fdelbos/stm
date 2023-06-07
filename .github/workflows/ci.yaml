@@ -1,0 +1,22 @@
+name: Continuous Integration
+on: [push]
+
+jobs:
+  ci:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Install dependencies
+        run: |
+          go install github.com/vektra/mockery/v2@v2.28.2
+          go mod download
+
+      - name: Set up Go
+        uses: actions/setup-go@v4
+        with:
+          go-version-file: ./go.mod
+
+      - name: Run tests
+        run: make test
