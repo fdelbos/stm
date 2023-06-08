@@ -6,16 +6,35 @@ import (
 )
 
 type (
+	// Msg is a message that can is sent to a state machine. Msg can be anything.
+	// It is up to the state machine to interpret the message. Msg are generated from Commands.
 	Msg interface{}
 
+	// Cmd is a function that returns a message. The function run asynchronously
+	// so the order of execution is not guaranteed. Messages (ie: the results of commands)
+	// are then sent synchronously (1 by 1) to the state machine as soon as they are ready.
 	Cmd func() Msg
 
+	// State is an interface that can be used to implement a state of a state machine.
 	State interface {
+		// Update is called when a message is received by the state machine.
+		// It returns the next state and a command to execute. Make sure that
+		// the command is not blocking. If you need to block, return a command instead,
+		// the resulting message will be sent to the state machine when the command is executed.
 		Update(Msg) (State, Cmd)
+
+		// Init is called when the state machine is created. You can use this method
+		// to run some initialization code.
 		Init() Cmd
 	}
 
 	batched []Cmd
+
+	// Sender is an interface that can send commands to a state machine.
+	// Use this interface to send commands to the state machine from outside.
+	Sender interface {
+		Send(Cmd)
+	}
 
 	// Stm is a state machine.
 	Stm struct {
@@ -25,6 +44,7 @@ type (
 		ctx context.Context
 	}
 
+	// Option is a function that can be used to configure a state machine.
 	StmOptions func(*Stm)
 )
 
